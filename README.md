@@ -9,7 +9,7 @@ assignment work (Assignments 3 and 4 will have some overlap with the Christmas b
 You are strongly recommended to use git properly/productively: commit every 'unit' of work (e.g., individual exercises) and bug fixes separately. You do not need to worry about the mistakes in the earlier commits. Your assignment will be evaluated based only on the final commit before the deadline. Also, don't forget to add your information and the honor code to each file that you modify.
 
 This assignment covers graph algorithms, and has six subproblems. You are
-encouraged to use private helper functions as needed to implement the public
+encouraged to use __private helper functions__ as needed to implement the public
 methods.
 
 **Also, remember that your code is written once and read many times. The
