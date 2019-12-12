@@ -54,9 +54,9 @@ A directed edge connects each synset to its hypermym(s), e.g. the hypernym
 synsets of the `domestic_dog` synset are `canine canid` and `domestic_animal
 domesticated_animal`. 
 
-Your task for this assignment is to implement a WordNet class to represent the
-WordNet synsets and the hyperonymy relation between them, and to support a variety
-of queries for extracting the information encoded in the hierarchical structure
+Your task for this assignment is to __implement a WordNet class to represent the
+WordNet synsets__ and the hyperonymy relation between them, and to support a variety
+of queries for __extracting the information__ encoded in the hierarchical structure
 of WordNet.
 
 ## 1. The WordNet data structure
