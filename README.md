@@ -59,6 +59,9 @@ WordNet synsets__ and the hyperonymy relation between them, and to support a var
 of queries for __extracting the information__ encoded in the hierarchical structure
 of WordNet.
 
+* Node: each synset
+* Graph: WordNet
+
 ## 1. The WordNet data structure
 
 Write a `WordNet` class containing the following methods:
