@@ -105,9 +105,9 @@ and `Relation`.
 The `Synset` class should store information related to the id of a synset, its
 lemmas and its definition. It might be useful to separate the information
 about lemmas using another abstraction - the `Lemma` class.
-A synset should keep track of the lemmas it has, and provide an iteration over
+**A synset should keep track of the lemmas it has, and provide an iteration over
 its lemmas - e.g. `for lemma in synset` (remember that a class can provide a specific
-iteration by implementing the `__iter__` method).
+iteration by implementing the `__iter__` method).**
 
 Also, the `Synset` class should provide methods for querying what is the id,
 what are the lemmas and what is the gloss of the current synset.
