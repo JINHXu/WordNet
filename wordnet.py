@@ -23,6 +23,7 @@ class WordNet:
         hypernyms_file : string
             The file path of hypernyms file.
         """
+
         
         
         
@@ -170,6 +171,14 @@ class Lemma:
 
         self._id = idList
         self._glossesList = glossesList
+    # to be determined
+    @property
+    def lemma(self):
+        """lemma getter: return the lemma of this lemma
+        Return
+        """
+        return self._lemma
+
     @property
     def idList(self):
         """idList getter: return a list of ids of this lemma
