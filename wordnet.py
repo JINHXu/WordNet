@@ -27,6 +27,7 @@ class WordNet:
         
         
         
+        
 
     def get_synsets(self, noun):
         """
@@ -176,6 +177,9 @@ class Lemma:
     def lemma(self):
         """lemma getter: return the lemma of this lemma
         Return
+        ------
+        self._lemma : string
+            the lemma of this lemma
         """
         return self._lemma
 
