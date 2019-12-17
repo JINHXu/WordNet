@@ -23,11 +23,48 @@ class WordNet:
         hypernyms_file : string
             The file path of hypernyms file.
         """
+        # dictionary id: synset
+        id2synset = dict()
 
-        
-        
-        
-        
+        with open(synsets_file, 'r', encoding='utf-8') as f_synsets:
+            lines = f_synsets.readlines()
+            for line in lines:
+                data = line.split(',')
+                id = data[0]
+                # list of lemmas(string)
+                lemmas = data[1].split(' ')
+                # list of lemmas(object of Lemma)
+                new_lemmas = []
+                for lemma in lemmas:
+                    l = Lemma(lemma)
+                    new_lemmas.append(l)
+
+                gloss = data[2]
+
+                synset = Synset(id, new_lemmas, gloss)
+
+                id2synset[id] = synsets
+
+        self._verticesDict = id2synset
+
+        # set(dictionary) of (vertice, hyper_vertice) paris: get a vertex only by id
+        v2hyperv = dict()
+        with open(hypernyms_file, 'r', encoding='utf-8') as f_hypernyms:
+            lines = f_hypernyms.readlines
+            for line in lines:
+
+                data = line.split(',')
+                vertice = data[0]
+                # list of ids that are hyper
+                hypers = data[1:]
+
+                synset = id2synset[vertice]
+
+                for hyper in hypers:
+                    hyper_synset = id2synset[hyper]
+                    v2hyperv[synset] = hyper_synset
+
+        self._edgesDict = v2hyperv
 
     def get_synsets(self, noun):
         """
@@ -42,6 +79,9 @@ class WordNet:
             a list of synsets, each synset is an object of Synset
         """
         synsets = []
+        for synset in self._verticesDict.values():
+            if synset.lemma.lemma == noun:
+                synsets.append(synset)
         return synsets
 
     def __iter__(self):
@@ -155,20 +195,33 @@ class Relation:
 class Lemma:
     """The Lemma class stores lemma."""
 
-    def __init__(self, lemma, idList, glossesList):
+    def __init__(self, lemma):
         """The constructor of the Lemma class
         Parameters
         ----------
         lemma : string
             a lemma in WordNet
+        
+        ???
         idList : list
             a list of ids of this lemma(each id is a string)
         glossesList : list
             a list of glosses of this lemma(each gloss is a string)
+        ???
         """
         self._lemma = lemma
 
         # ???
+        wn = WordNet()
+
+        # obtain list of ids of this lemma
+        idList = []
+        # obtain list of glosses of this lemma
+        glossesList = []
+
+        for synset in wn.get_synsets(lemma):
+            idList.append(synset.id)
+            glossesList.append( synset.gloss)
 
         self._id = idList
         self._glossesList = glossesList
