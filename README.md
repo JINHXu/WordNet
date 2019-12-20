@@ -61,6 +61,8 @@ of WordNet.
 
 * Node: each synset
 * Graph: WordNet
+* points to hyper(destination)
+
 
 ## 1. The WordNet data structure
 
