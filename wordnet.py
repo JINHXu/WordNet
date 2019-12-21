@@ -47,48 +47,66 @@ class WordNet:
 
         self._verticesDict = id2synset
 
-        # set(dictionary) of (vertice, hyper_vertice) paris: get a vertex only by id
-        v2hyperv = dict()
+        # dictionary oringin id : relation
+        origin2relation = dict()
         with open(hypernyms_file, 'r', encoding='utf-8') as f_hypernyms:
-            lines = f_hypernyms.readlines
+            lines = f_hypernyms.readlines()
             for line in lines:
 
                 data = line.split(',')
-                vertice = data[0]
+                origin_id = data[0]
+                origin = id2synset[origin_id]
+
                 # list of ids that are hyper
                 hypers = data[1:]
 
-                synset = id2synset[vertice]
-
                 for hyper in hypers:
-                    hyper_synset = id2synset[hyper]
-                    v2hyperv[synset] = hyper_synset
+                    destination_id = hyper
+                    destination = origin2relation[destination_id]
+                    relation = Relation(origin, destination)
+                    origin2relation[origin_id] = relation
 
-        self._edgesDict = v2hyperv
+        self._edgesDict = origin2relation
+
+        # dictionary lemma : list of synsets where this lemma appears
+        lemma2synset = dict()
+        for synset in id2synset.values():
+            for lemma in synset.lemma:
+                lemma_string = lemma.lemma
+
+                if lemma in lemma2synset.keys():
+                    lemma2synset[lemma].append(synset)
+                else:
+                    lemma2synset[lemma] = [synset]
+
+        self._lemmasDict = lemma2synset
 
     def get_synsets(self, noun):
         """
         Returns the list of synsets where noun appears as a lemma. An empty list should be returned if the noun is not part of any WordNet synsets.
         Parameter
         ---------
-        noun : Lemma
+        noun : string
             a lemma(noun)
         Return
         ------
         synsets : list
             a list of synsets, each synset is an object of Synset
         """
-        synsets = []
-        for synset in self._verticesDict.values():
-            if synset.lemma.lemma == noun:
-                synsets.append(synset)
-        return synsets
+        lemma = Lemma(noun)
+        for synset in self._lemmasDict[lemma]:
+            yield synset
 
     def __iter__(self):
-        """provide an iteration over its synsets"""
-        pass
+        """
+        provide an iteration over its synsets
+        Return
+        ------
+        the list of synsets of this wordnet graph
+        """
+        yield from self.get_synsets()
 
-    def _graph_repr(self):
+    def __str__(self):
         pass
 
 
@@ -145,13 +163,20 @@ class Synset:
         -------
         hash(id(self)) : int
             a hashcode that is then used to insert objects into hashtables aka dictionaries"""
-        return hash(id(self))
+        return hash((self._id, self._lemma, self._gloss))
+
+    def __eq__(self, othr):
+
+        if isinstance(othr, type(self)):
+            return ((self._id, self._lemma, self._gloss) == (othr._id, othr._lemma, othr._gloss))
+
+        return NotImplemented
 
     def __iter__(self):
         """provide an iteration over its lemmas"""
-        pass
+        yield from self._lemma
 
-    def _node_repr(self):
+    def __str__(self):
         pass
 
 
@@ -162,11 +187,11 @@ class Relation:
         """The constructor of the edge class Realtion of Graph Synset
         Parameters
         ----------
-        origin : string 
-            id of origin synset
+        origin : Synset
+            origin vertice(synset)
         
-        destination : string
-            id of destination synset
+        destination : Synset
+            destination vertice(synset)
         """
         self._origin = oringin
         self._destination = destination
@@ -190,8 +215,9 @@ class Relation:
         return hash((self._origin, self._destination))
 
    
-    def _edge_repr(self):
-        pass
+    def __str__(self):
+        return (str(self._origin), str(self._destination))
+
 class Lemma:
     """The Lemma class stores lemma."""
 
@@ -201,31 +227,10 @@ class Lemma:
         ----------
         lemma : string
             a lemma in WordNet
-        
-        ???
-        idList : list
-            a list of ids of this lemma(each id is a string)
-        glossesList : list
-            a list of glosses of this lemma(each gloss is a string)
-        ???
         """
         self._lemma = lemma
 
-        # ???
-        wn = WordNet()
-
-        # obtain list of ids of this lemma
-        idList = []
-        # obtain list of glosses of this lemma
-        glossesList = []
-
-        for synset in wn.get_synsets(lemma):
-            idList.append(synset.id)
-            glossesList.append( synset.gloss)
-
-        self._id = idList
-        self._glossesList = glossesList
-    # to be determined
+  
     @property
     def lemma(self):
         """lemma getter: return the lemma of this lemma
@@ -236,27 +241,12 @@ class Lemma:
         """
         return self._lemma
 
-    @property
-    def idList(self):
-        """idList getter: return a list of ids of this lemma
-        Return
-        ------
-        idList : list
-            a list of ids of this lemma
+
+    def __str__(self):
+        """__str__ function of lemma class, to make sure meaningful representations when displayed via the print() method
+        Returns
+        -------
+        self._lemma : string
+            the string lemma stored in this lemma
         """
-        return self._idList
-    
-    @property
-    def glossesList(self):
-        """glossesList getter: return a list of glosses of this lemma
-        Return
-        ------
-        glossesList : list
-            a list of glosses of this lemma
-        """
-        return self._glossesList
-
-    def _lemma_repr(self):
-        pass
-
-
+        return self._lemma
