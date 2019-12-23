@@ -47,7 +47,7 @@ class WordNet:
 
         self._verticesDict = id2synset
 
-        # dictionary oringin id : relation
+        # dictionary oringin id : list of relations
         origin2relation = dict()
         with open(hypernyms_file, 'r', encoding='utf-8') as f_hypernyms:
             lines = f_hypernyms.readlines()
@@ -59,12 +59,15 @@ class WordNet:
 
                 # list of ids that are hyper
                 hypers = data[1:]
+                relations = []
 
                 for hyper in hypers:
                     destination_id = hyper
                     destination = origin2relation[destination_id]
                     relation = Relation(origin, destination)
-                    origin2relation[origin_id] = relation
+                    realtions.append(realtion)
+
+                origin2relation[origin_id] = relations
 
         self._edgesDict = origin2relation
 
@@ -97,6 +100,58 @@ class WordNet:
         for synset in self._lemmasDict[lemma]:
             yield synset
 
+    # not used, might be deleted
+    def incident_realtions(self, synset):
+        """
+        A helper function of bfs, returns incident relations of synset.
+        Parameter
+        ---------
+        synset : Synset
+            a synset of WordNet
+        Return
+        ------
+        incident_relations : list
+            a list of incident edges of this synset
+        """
+        incident_realtions = self._edgesDict[synset.id]
+        return incident_realtions
+
+    def bfs(self, synset):
+        """
+        Returns a dictionary containing all the hypernym synsets on the paths from the current synset to the root node by runing a bfs traversal.
+        Parameter
+        ---------
+        synset : Synset
+            Current seynset from which the bfs will start to the root node.
+        Return
+        ------
+        discovered : dictionary
+            A dictionary containing all the hypernym synsets on the paths from the current synset to the root node.
+            The keys of the dictionary should be Synset objects representing the hypernyms of synset,
+            while the values should be tuples of the form (relation, distance). relation is the Relation edge used to discover that hypernym and distance is the integer distance,
+            measured in number of edges, from the synset given as parameter to the current key.
+        """
+        # level number
+        distance = 1
+        # return dict
+        discovered = dict()
+        # list of vertices in each level, first level contains only synset
+        level = [synset]
+        while(len(level) > 0):
+            next_level = []
+            # for each vertex in this level(the origins)
+            for u in level:
+                # incident realtions whose origin is u
+                incident_realtions = self._edgesDict[u.id]
+                for relation in incident_realtions:
+                    # the hyper synset
+                    v = relation.destination
+                    if v not in discovered:
+                        discovered[v] = (relation, distance)
+                        next_level.append(v)
+            level = next_level
+            distance += 1
+
     def __iter__(self):
         """
         provide an iteration over its synsets
@@ -106,8 +161,12 @@ class WordNet:
         """
         yield from self.get_synsets()
 
+    def __len__(self):
+        return len(self._verticesDict)
+
+    # require further modification/improvement
     def __str__(self):
-        pass
+        return
 
 
 class Synset:
@@ -177,24 +236,30 @@ class Synset:
         yield from self._lemma
 
     def __str__(self):
-        pass
+        return self.id + str(self.lemma) + str(self.gloss)
 
 
 class Relation:
-     """ The Relation class stores the origin and the destination of the relation.(functions as the Edge class of a Graph class)"""
+    """ The Relation class stores the origin and the destination of the relation.(functions as the Edge class of a Graph class)"""
 
-    def __init__(self, origin, destinition):
-        """The constructor of the edge class Realtion of Graph Synset
+    def __init__(self, origin, destination):
+        """
+        The constructor of the edge class Realtion of Graph Synset
         Parameters
         ----------
         origin : Synset
             origin vertice(synset)
-        
         destination : Synset
             destination vertice(synset)
         """
-        self._origin = oringin
+        self._origin = origin
         self._destination = destination
+
+    def origin(self):
+        return self._origin
+
+    def destination(self):
+        return self._destination
 
     def endpoints(self):
         """Return (origin, destination) tuple for vertices origin and destination.
@@ -214,9 +279,9 @@ class Relation:
             a hashcode that is then used to insert objects into hashtables aka dictionaries"""
         return hash((self._origin, self._destination))
 
-   
     def __str__(self):
         return (str(self._origin), str(self._destination))
+
 
 class Lemma:
     """The Lemma class stores lemma."""
@@ -230,7 +295,6 @@ class Lemma:
         """
         self._lemma = lemma
 
-  
     @property
     def lemma(self):
         """lemma getter: return the lemma of this lemma
@@ -240,7 +304,6 @@ class Lemma:
             the lemma of this lemma
         """
         return self._lemma
-
 
     def __str__(self):
         """__str__ function of lemma class, to make sure meaningful representations when displayed via the print() method
