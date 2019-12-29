@@ -37,6 +37,7 @@ class TestWordNet(unittest.TestCase):
         paths = self.wn.paths_to_root(domestic_cat)
         self.assertEqual(len(paths), 1) 
         self.assertEqual(len(paths[0]), 13) 
+"""
 
     def test_lowest_common_hypernym(self):
         dog_synsets = self.wn.get_synsets("dog")
@@ -80,3 +81,4 @@ class TestWordNet(unittest.TestCase):
         #[61107] placental placental_mammal eutherian eutherian_mammal: mammals having a placenta; all mammals except monotremes and marsupials
         self.assertEqual(len(lowest_common_hypernyms), 1)
         self.assertEqual(next(iter(lowest_common_hypernyms)).index, 61107)
+"""

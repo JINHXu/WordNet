@@ -29,6 +29,7 @@ class WordNet:
         with open(synsets_file, 'r', encoding='utf-8') as f_synsets:
             lines = f_synsets.readlines()
             for line in lines:
+                # line = line.rstrip('\n')
                 data = line.split(',')
                 id = data[0]
                 # list of lemmas(string)
@@ -43,7 +44,7 @@ class WordNet:
 
                 synset = Synset(id, new_lemmas, gloss)
 
-                id2synset[id] = synsets
+                id2synset[id] = synset
 
         self._verticesDict = id2synset
 
@@ -53,19 +54,24 @@ class WordNet:
             lines = f_hypernyms.readlines()
             for line in lines:
 
+                line = line.rstrip('\n')
                 data = line.split(',')
+
                 origin_id = data[0]
                 origin = id2synset[origin_id]
 
                 # list of ids that are hyper
                 hypers = data[1:]
+
                 relations = []
 
                 for hyper in hypers:
                     destination_id = hyper
-                    destination = origin2relation[destination_id]
+                    # for better readability
+                    origin = id2synset[origin_id]
+                    destination = id2synset[destination_id]
                     relation = Relation(origin, destination)
-                    realtions.append(realtion)
+                    relations.append(relation)
 
                 origin2relation[origin_id] = relations
 
@@ -75,7 +81,6 @@ class WordNet:
         lemma2synset = dict()
         for synset in id2synset.values():
             for lemma in synset.lemma:
-                lemma_string = lemma.lemma
 
                 if lemma in lemma2synset.keys():
                     lemma2synset[lemma].append(synset)
@@ -99,22 +104,6 @@ class WordNet:
         lemma = Lemma(noun)
         for synset in self._lemmasDict[lemma]:
             yield synset
-
-    # not used, might be deleted
-    def incident_realtions(self, synset):
-        """
-        A helper function of bfs, returns incident relations of synset.
-        Parameter
-        ---------
-        synset : Synset
-            a synset of WordNet
-        Return
-        ------
-        incident_relations : list
-            a list of incident edges of this synset
-        """
-        incident_realtions = self._edgesDict[synset.id]
-        return incident_realtions
 
     def bfs(self, synset):
         """
@@ -152,6 +141,56 @@ class WordNet:
             level = next_level
             distance += 1
 
+        return discovered
+
+    def print_paths_to_root(self, current_synset, path, paths):
+        """
+        A private helper function printing paths from synset to root node based on DFS.
+        Parameters
+        ----------
+        current_synset : Synset
+            current synset, a synset from which the paths are constructed in the first call.
+        path : list
+            a list of relations of current path, an empty list will be initially passed to this function in the first call
+        paths : list
+            a list of paths, which are lists of relations forming a path , an empty list will be initially passed to this function in the first call
+        """
+
+        # hitting the root node: a node(synset) does not have any put going edge(realtion)
+        if current_synset not in self._edgesDict:
+
+            # print(path)
+            paths.append(path)
+
+        # not hitting the root node, keep digging by recursive call
+        else:
+            for relation in self._edgesDict[current_synset.id]:
+                path.append(relation)
+                hyper_to_current = relation.destination
+                self.print_paths_to_root(hyper_to_current, path, paths)
+
+    def paths_to_root(self, synset):
+        """
+        A function to print all the different paths from a particular synset to the root node. The function returns a list of Path objects, wihch are paths from synset to root.
+        Parameter
+        ---------
+        synset : Synset
+            The seynset vertice where the returned paths are from.
+        Return
+        ------
+        paths_to_root : list
+            A list of objects of Path, which are paths from synset to root.
+        """
+        paths_to_root = []
+        # parameters passed to function's initial call
+        paths = []
+        tmp_path = []
+        self.print_paths_to_root(synset, tmp_path, paths)
+        for path in paths:
+            p = Path(path)
+            paths_to_root.append(p)
+        return paths_to_root
+
     def __iter__(self):
         """
         provide an iteration over its synsets
@@ -159,7 +198,7 @@ class WordNet:
         ------
         the list of synsets of this wordnet graph
         """
-        yield from self.get_synsets()
+        yield from self._verticesDict.values()
 
     def __len__(self):
         return len(self._verticesDict)
@@ -287,7 +326,8 @@ class Lemma:
     """The Lemma class stores lemma."""
 
     def __init__(self, lemma):
-        """The constructor of the Lemma class
+        """
+        The constructor of the Lemma class
         Parameters
         ----------
         lemma : string
@@ -297,7 +337,8 @@ class Lemma:
 
     @property
     def lemma(self):
-        """lemma getter: return the lemma of this lemma
+        """
+        lemma getter: return the lemma of this lemma
         Return
         ------
         self._lemma : string
@@ -306,10 +347,58 @@ class Lemma:
         return self._lemma
 
     def __str__(self):
-        """__str__ function of lemma class, to make sure meaningful representations when displayed via the print() method
+        """
+        __str__ function of lemma class, to make sure meaningful representations when displayed via the print() method
         Returns
         -------
         self._lemma : string
             the string lemma stored in this lemma
         """
         return self._lemma
+
+
+class Path:
+    """Path class represents paths from one synset(vertex) to another in wordnet(graph)."""
+
+    def __init__(self, relations):
+        """
+        The constructor of path class, creating a path based on a list of Relation objects.
+        Parameter
+        ---------
+        realtions : list
+            A list of Relation objects which the path is based on.
+        """
+        edges = []
+        verts = []
+
+        for relation in relations:
+            edges.append(relation)
+            origin = relation.origin
+            destination = relation.destination
+            # no duplicate vertices in verts
+            if origin not in verts:
+                verts.append(origin)
+            if destination not in verts:
+                verts.append(destination)
+
+        self._relations = relations
+        self._edges = edges
+        self._vertices = verts
+
+    @property
+    def edges(self):
+        return self._edges
+
+    @property
+    def vertices(self):
+        return self._vertices
+
+    def __len__(self):
+        return len(self._edges)
+
+    # tmp str function
+    def __str__(self):
+        repr = ''
+        for relation in self._relations:
+            repr += str(relation)
+        return repr
