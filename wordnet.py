@@ -101,9 +101,12 @@ class WordNet:
         synsets : list
             a list of synsets, each synset is an object of Synset
         """
+        synsets = []
         lemma = Lemma(noun)
-        for synset in self._lemmasDict[lemma]:
-            yield synset
+        lemmas_dict = self._lemmasDict
+        for synset in lemmas_dict[lemma]:
+            synsets.append(synset)
+        return synsets
 
     def bfs(self, synset):
         """
@@ -255,13 +258,9 @@ class Synset:
             the gloss associated with this synset"""
         return self._gloss
 
-    def ___hash___(self):
-        """will allow vertex to be a map/set key
-        Return
-        -------
-        hash(id(self)) : int
-            a hashcode that is then used to insert objects into hashtables aka dictionaries"""
-        return hash((self._id, self._lemma, self._gloss))
+    def __hash__(self):
+        # temp???
+        return hash(self._id)
 
     def __eq__(self, othr):
 
@@ -355,6 +354,16 @@ class Lemma:
             the string lemma stored in this lemma
         """
         return self._lemma
+
+    def __hash__(self):
+        return hash(self._lemma)
+
+    def __eq__(self, othr):
+
+        if isinstance(othr, type(self)):
+            return (self._lemma == othr._lemma)
+
+        return NotImplemented
 
 
 class Path:
