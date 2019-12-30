@@ -74,19 +74,21 @@ class TestWordNet(unittest.TestCase):
         distance = self.wn.distance(domestic_dog, domestic_cat)
         self.assertEqual(distance, 4)
 
-
-"""
-
     def test_lch_similarity(self):
         dog_synsets = self.wn.get_synsets("dog")
-        domestic_dog = next(syn for syn in dog_synsets if "domestic_dog" in syn.name)
-        
+        domestic_dog = next(
+            syn for syn in dog_synsets if "domestic_dog" in syn.name)
+
         cat_synsets = self.wn.get_synsets("cat")
-        domestic_cat = next(syn for syn in cat_synsets if "true_cat" in syn.name)
+        domestic_cat = next(
+            syn for syn in cat_synsets if "true_cat" in syn.name)
 
         lch_similarity = self.wn.lch_similarity(domestic_dog, domestic_cat)
 
-        self.assertAlmostEqual(lch_similarity, 2.028148247)                
+        self.assertAlmostEqual(lch_similarity, 2.028148247)
+
+
+"""             
     
     def test_noun_lowest_common_hypernyms(self):
         lowest_common_hypernyms = self.wn.noun_lowest_common_hypernyms("dog", "horse")

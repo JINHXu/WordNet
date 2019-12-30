@@ -8,6 +8,7 @@
 
     Honor Code:  I pledge that this program represents my own work.
 """
+import math
 
 
 class WordNet:
@@ -88,6 +89,11 @@ class WordNet:
                     lemma2synset[lemma] = [synset]
 
         self._lemmasDict = lemma2synset
+
+    # tmp
+    @property
+    def edgesdict(self):
+        return self._edgesDict
 
     def get_synsets(self, noun):
         """
@@ -239,7 +245,7 @@ class WordNet:
             One of the two synsets to compute the distance.
         synset2 : Synset
             The other synset to compute the distance.
-        Return 
+        Return
         ------
         dist : int
             The distance between synset1 and synset2.
@@ -257,6 +263,45 @@ class WordNet:
 
             dist = min(dists)
             return dist
+
+    def depth_wordnet(self):
+        """
+        A helper function of lch_similarity computing the overall depth of word net.
+        Return
+        ------
+        depth : int
+            The overall depth of word net
+        """
+        depth = 0
+        distances_to_root = []
+        for vertice in self._verticesDict.values():
+            distance_to_root = len(self.paths_to_root(vertice))
+            distances_to_root.append(distance_to_root)
+        depth = max(distances_to_root)
+        return depth
+
+    def lch_similarity(self, synset1, synset2):
+        """
+        A method to compute the Leacock-Chodorow distance between two synsets. The Leacock-Chodorow distance expresses the similarity between two synsets in terms of the distance between them.
+        Parameters
+        ----------
+        synset1 : Synset
+            One synset of the 2 synsets to compute lch similarity.
+        synset2 : Synset
+            The other synset involving the lch computing.
+        Return
+        ------
+        lc_dist : int
+            The Leacock-Chodorow distance between synset1 and synset2.
+        """
+        lc_dist = 0
+        depth = self.depth_wordnet()
+        if depth == 0:
+            raise Exception(
+                "The overall depth of the hierachy is 0, this will lead to a division by 0.")
+        else:
+            lc_dist = -math.log(self.distance(synset1, synset2)/(depth*2))
+        return lc_dist
 
     def __iter__(self):
         """
@@ -496,3 +541,18 @@ class Path:
         for relation in self._relations:
             repr += str(relation)
         return repr
+
+# tmp
+
+
+def main():
+    wn = WordNet("data/synsets.txt", "data/hypernyms.txt")
+    count_edges = 0
+    for l in wn.edgesdict.values():
+        for i in l:
+            count_edges += 1
+    print(count_edges)
+
+
+if __name__ == "__main__":
+    main()
