@@ -29,8 +29,7 @@ class WordNet:
         with open(synsets_file, 'r', encoding='utf-8') as f_synsets:
             lines = f_synsets.readlines()
             for line in lines:
-                # not neccesarily necessary
-                line = line.rstrip('\n')
+                # line = line.rstrip('\n')
                 data = line.split(',')
                 id = data[0]
                 # list of lemmas(string)
@@ -168,8 +167,7 @@ class WordNet:
 
         # not hitting the root node, keep digging by recursive call
         else:
-            edgesDict = self._edgesDict
-            for relation in edgesDict[current_synset.id]:
+            for relation in self._edgesDict[current_synset.id]:
                 path.append(relation)
                 hyper_to_current = relation.destination
                 print(hyper_to_current)
