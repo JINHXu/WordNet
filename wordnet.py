@@ -170,7 +170,6 @@ class WordNet:
             for relation in self._edgesDict[current_synset.id]:
                 path.append(relation)
                 hyper_to_current = relation.destination
-                print(hyper_to_current)
                 self.print_paths_to_root(hyper_to_current, path, paths)
 
     def paths_to_root(self, synset):
@@ -194,6 +193,35 @@ class WordNet:
             p = Path(path)
             paths_to_root.append(p)
         return paths_to_root
+
+    def lowest_common_hypernyms(self, synset1, synset2):
+        """
+        A function to compute the lowest common hypernyms between two synsets.
+        (A common hypernym is a hypernym that is on the path to root starting from both synset1 and synset2. The lowest common hypernym is the first hypernym that is common to both synsets.)
+        Parameters
+        ----------
+        synset1 : Synset
+            One of the two synsets to compute the lowest common synset.
+        synset2 : Synset
+            The other synset to compute the lowest common synset.
+        Return
+        ------
+        synsets : set
+            The set of the lowest common hypernyms between two synsets
+        """
+        synsets = set()
+        paths1 = self.paths_to_root(synset1)
+        paths2 = self.paths_to_root(synset2)
+        for p1 in paths1:
+            for p2 in paths2:
+                # vertices representation of a path
+                vertices_p1 = p1.vertices
+                vertices_p2 = p2.vertices
+                for v1 in vertices_p1:
+                    if v1 in vertices_p2:
+                        synsets.add(v1)
+                        break
+        return synsets
 
     def __iter__(self):
         """
@@ -232,10 +260,13 @@ class Synset:
         self._lemma = lemma
         self._gloss = gloss
 
-        # a fourth attribute according to unittest
+        # 2 more attributes added according to unittest
+        self._index = int(id)
+
         name = []
         for lm in lemma:
             name.append(lm.lemma)
+
         self._name = name
 
     @property
@@ -266,10 +297,14 @@ class Synset:
         self._gloss : string
             the gloss associated with this synset"""
         return self._gloss
-    
+
     @property
     def name(self):
         return self._name
+
+    @property
+    def index(self):
+        return self._index
 
     def __hash__(self):
         # temp???
@@ -305,9 +340,11 @@ class Relation:
         """
         self._origin = origin
         self._destination = destination
+
     @property
     def origin(self):
         return self._origin
+
     @property
     def destination(self):
         return self._destination

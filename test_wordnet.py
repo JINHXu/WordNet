@@ -45,14 +45,15 @@ class TestWordNet(unittest.TestCase):
 
         self.assertEqual(len(paths), 1)
         self.assertEqual(len(paths[0]), 13)
-    """
 
     def test_lowest_common_hypernym(self):
         dog_synsets = self.wn.get_synsets("dog")
-        domestic_dog = next(syn for syn in dog_synsets if "domestic_dog" in syn.name)
-        
+        domestic_dog = next(
+            syn for syn in dog_synsets if "domestic_dog" in syn.name)
+
         cat_synsets = self.wn.get_synsets("cat")
-        domestic_cat = next(syn for syn in cat_synsets if "true_cat" in syn.name)
+        domestic_cat = next(
+            syn for syn in cat_synsets if "true_cat" in syn.name)
 
         hyp = self.wn.lowest_common_hypernyms(domestic_dog, domestic_cat)
 
@@ -62,6 +63,8 @@ class TestWordNet(unittest.TestCase):
         self.assertEqual(len(hyp), 1)
         self.assertEqual(next(iter(hyp)).index, 27618)
 
+
+"""
     def test_distance(self):
         dog_synsets = self.wn.get_synsets("dog")
         domestic_dog = next(syn for syn in dog_synsets if "domestic_dog" in syn.name)
