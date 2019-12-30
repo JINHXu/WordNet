@@ -4,6 +4,7 @@ import unittest
 
 from wordnet import WordNet
 
+
 class TestWordNet(unittest.TestCase):
 
     @classmethod
@@ -25,19 +26,26 @@ class TestWordNet(unittest.TestCase):
 
     def test_paths_to_root_count(self):
         dog_synsets = self.wn.get_synsets("dog")
-        domestic_dog = next(syn for syn in dog_synsets if "domestic_dog" in syn.name)
-        
+
+        domestic_dog = next(
+            syn for syn in dog_synsets if "domestic_dog" in syn.name)
+
         paths = self.wn.paths_to_root(domestic_dog)
-        self.assertEqual(len(paths), 2) 
+
+        print(len(paths[0]))
+        self.assertEqual(len(paths), 2)
 
     def test_paths_to_root_length(self):
         cat_synsets = self.wn.get_synsets("cat")
-        domestic_cat = next(syn for syn in cat_synsets if "true_cat" in syn.name)
-        
+
+        domestic_cat = next(
+            syn for syn in cat_synsets if "true_cat" in syn.name)
+
         paths = self.wn.paths_to_root(domestic_cat)
-        self.assertEqual(len(paths), 1) 
-        self.assertEqual(len(paths[0]), 13) 
-"""
+
+        self.assertEqual(len(paths), 1)
+        self.assertEqual(len(paths[0]), 13)
+    """
 
     def test_lowest_common_hypernym(self):
         dog_synsets = self.wn.get_synsets("dog")

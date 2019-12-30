@@ -29,7 +29,8 @@ class WordNet:
         with open(synsets_file, 'r', encoding='utf-8') as f_synsets:
             lines = f_synsets.readlines()
             for line in lines:
-                # line = line.rstrip('\n')
+                # not neccesarily necessary
+                line = line.rstrip('\n')
                 data = line.split(',')
                 id = data[0]
                 # list of lemmas(string)
@@ -160,16 +161,18 @@ class WordNet:
         """
 
         # hitting the root node: a node(synset) does not have any put going edge(realtion)
-        if current_synset not in self._edgesDict:
+        if current_synset.id not in self._edgesDict:
 
             # print(path)
             paths.append(path)
 
         # not hitting the root node, keep digging by recursive call
         else:
-            for relation in self._edgesDict[current_synset.id]:
+            edgesDict = self._edgesDict
+            for relation in edgesDict[current_synset.id]:
                 path.append(relation)
                 hyper_to_current = relation.destination
+                print(hyper_to_current)
                 self.print_paths_to_root(hyper_to_current, path, paths)
 
     def paths_to_root(self, synset):
@@ -224,10 +227,18 @@ class Synset:
             List lemmas(objects of Lemma class) of this synset.
         gloss : string
             The gloss of this sysnset.
+        name : list
+            List of lemmas represented as string of this synset.
         """
         self._id = id
         self._lemma = lemma
         self._gloss = gloss
+
+        # a fourth attribute according to unittest
+        name = []
+        for lm in lemma:
+            name.append(lm.lemma)
+        self._name = name
 
     @property
     def id(self):
@@ -257,6 +268,10 @@ class Synset:
         self._gloss : string
             the gloss associated with this synset"""
         return self._gloss
+    
+    @property
+    def name(self):
+        return self._name
 
     def __hash__(self):
         # temp???
@@ -292,10 +307,10 @@ class Relation:
         """
         self._origin = origin
         self._destination = destination
-
+    @property
     def origin(self):
         return self._origin
-
+    @property
     def destination(self):
         return self._destination
 
