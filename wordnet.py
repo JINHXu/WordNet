@@ -129,10 +129,17 @@ class WordNet:
         discovered = dict()
         # list of vertices in each level, first level contains only synset
         level = [synset]
-        while(len(level) > 0):
+        while len(level) > 0:
             next_level = []
             # for each vertex in this level(the origins)
             for u in level:
+                '''
+                        warning
+                          !!!
+                '''
+                # hitting the root node
+                if u.id not in self._edgesDict:
+                    break
                 # incident realtions whose origin is u
                 incident_realtions = self._edgesDict[u.id]
                 for relation in incident_realtions:
@@ -222,6 +229,34 @@ class WordNet:
                         synsets.add(v1)
                         break
         return synsets
+
+    def distance(self, synset1, synset2):
+        """
+        A function to compute the distance between two synsets. Returns the length (number of edges) of the shortest path between the two synsets.
+        Parameters
+        ----------
+        synset1 : Synset
+            One of the two synsets to compute the distance.
+        synset2 : Synset
+            The other synset to compute the distance.
+        Return 
+        ------
+        dist : int
+            The distance between synset1 and synset2.
+        """
+        dist = 0
+        dists = []
+        lchs = self.lowest_common_hypernyms(synset1, synset2)
+        discovered1 = self.bfs(synset1)
+        discovered2 = self.bfs(synset2)
+        for lch in lchs:
+            dist1 = discovered1[lch][1]
+            dist2 = discovered2[lch][1]
+            add = dist1 + dist2
+            dists.append(add)
+
+            dist = min(dists)
+            return dist
 
     def __iter__(self):
         """
