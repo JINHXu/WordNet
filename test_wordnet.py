@@ -86,11 +86,13 @@ class TestWordNet(unittest.TestCase):
         lch_similarity = self.wn.lch_similarity(domestic_dog, domestic_cat)
 
         self.assertAlmostEqual(lch_similarity, 2.028148247)
-    """
     
-    def test_noun_lowest_common_hypernyms(self):
-        lowest_common_hypernyms = self.wn.noun_lowest_common_hypernyms("dog", "horse")
+    """
 
-        #[61107] placental placental_mammal eutherian eutherian_mammal: mammals having a placenta; all mammals except monotremes and marsupials
+    def test_noun_lowest_common_hypernyms(self):
+        lowest_common_hypernyms = self.wn.noun_lowest_common_hypernyms(
+            "dog", "horse")
+
+        # [61107] placental placental_mammal eutherian eutherian_mammal: mammals having a placenta; all mammals except monotremes and marsupials
         self.assertEqual(len(lowest_common_hypernyms), 1)
         self.assertEqual(next(iter(lowest_common_hypernyms)).index, 61107)

@@ -319,12 +319,8 @@ class WordNet:
         """
         synsets = set()
 
-        lemma1 = Lemma(noun1)
-        # list of synsets
-        synsets1 = self._lemmasDict[lemma1]
-        lemma2 = Lemma(noun2)
-        # list of synsets
-        synsets2 = self._lemmasDict[lemma2]
+        synsets1 = self.get_synsets(noun1)
+        synsets2 = self.get_synsets(noun2)
 
         dist = float("inf")
         pair = None
@@ -332,23 +328,17 @@ class WordNet:
         for s1 in synsets1:
             for s2 in synsets2:
                 new_dist = self.distance(s1, s2)
-                if new_dist < dist:
+                if new_dist <= dist:
                     dist = new_dist
                     pair = (s1, s2)
-                
-                # to stock with this algorithm, a new_dist == dist case tba
-                    
+
+                # to stick with this algorithm, a new_dist == dist case tba
+
         synsets = self.lowest_common_hypernyms(pair[0], pair[1])
 
         return synsets
 
     def __iter__(self):
-        """
-        provide an iteration over its synsets
-        Return
-        ------
-        the list of synsets of this wordnet graph
-        """
         yield from self._verticesDict.values()
 
     def __len__(self):
