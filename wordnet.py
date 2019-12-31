@@ -220,7 +220,7 @@ class WordNet:
         Return
         ------
         synsets : set
-            The set of the lowest common hypernyms between two synsets
+            The set of the lowest common hypernyms between synset1 and synset2.
         """
         synsets = set()
         paths1 = self.paths_to_root(synset1)
@@ -302,6 +302,45 @@ class WordNet:
         else:
             lc_dist = -math.log(self.distance(synset1, synset2)/(depth*2))
         return lc_dist
+
+    def noun_lowest_common_hypernyms(self, noun1, noun2):
+        """
+        A function to compute the lowest common hypernyms between two nouns. The function returns a set of lowest common hypernyms.
+        Parameters
+        ----------
+        noun1 : string
+            One of the 2 nouns to compute lch.
+        noun2 : string
+            The other noun to compute lch.
+        Return
+        ------
+        synsets : set
+            A set of lowest common hypernyms between the synsets of noun1 and noun2.
+        """
+        synsets = set()
+
+        lemma1 = Lemma(noun1)
+        # list of synsets
+        synsets1 = self._lemmasDict[lemma1]
+        lemma2 = Lemma(noun2)
+        # list of synsets
+        synsets2 = self._lemmasDict[lemma2]
+
+        dist = float("inf")
+        pair = None
+
+        for s1 in synsets1:
+            for s2 in synsets2:
+                new_dist = self.distance(s1, s2)
+                if new_dist < dist:
+                    dist = new_dist
+                    pair = (s1, s2)
+                
+                # to stock with this algorithm, a new_dist == dist case tba
+                    
+        synsets = self.lowest_common_hypernyms(pair[0], pair[1])
+
+        return synsets
 
     def __iter__(self):
         """
