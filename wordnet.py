@@ -322,19 +322,22 @@ class WordNet:
         synsets1 = self.get_synsets(noun1)
         synsets2 = self.get_synsets(noun2)
 
-        dist = float("inf")
-        pair = None
+        dist2lch = dict()
 
         for s1 in synsets1:
             for s2 in synsets2:
-                new_dist = self.distance(s1, s2)
-                if new_dist <= dist:
-                    dist = new_dist
-                    pair = (s1, s2)
-
-                # to stick with this algorithm, a new_dist == dist case tba
-
-        synsets = self.lowest_common_hypernyms(pair[0], pair[1])
+                lchs = self.lowest_common_hypernyms(s1, s2)
+      
+                for lch in lchs:
+                    dist_lch_to_root = len(self.bfs(lch))
+                    if dist_lch_to_root not in dist2lch:
+                        dist2lch[dist_lch_to_root] = [lch]
+                    else:
+                        dist2lch[dist_lch_to_root].append(lch)
+        
+        max_dist = max(dist2lch.keys())
+        for lch in dist2lch[max_dist]:
+            synsets.add(lch)
 
         return synsets
 
@@ -346,7 +349,7 @@ class WordNet:
 
     # require further modification/improvement
     def __str__(self):
-        return
+        return self.id
 
 
 class Synset:
