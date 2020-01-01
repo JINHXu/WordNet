@@ -174,7 +174,6 @@ class WordNet:
 
         # hitting the root node: a node(synset) does not have any put going edge(realtion)
         if current_synset.id not in self._edgesDict:
-
             # print(path)
             paths.append(path)
 
@@ -267,17 +266,20 @@ class WordNet:
     def depth_wordnet(self):
         """
         A helper function of lch_similarity computing the overall depth of word net.
+        This function calculates the longest possible path from each possible leaf node to root node.
         Return
         ------
         depth : int
-            The overall depth of word net
+            The overall depth of word net.
         """
         depth = 0
         distances_to_root = []
         for vertice in self._verticesDict.values():
-            distance_to_root = len(self.paths_to_root(vertice))
-            distances_to_root.append(distance_to_root)
+            for path in self.paths_to_root(vertice):
+                distance_to_root = len(path)
+                distances_to_root.append(distance_to_root)
         depth = max(distances_to_root)
+        # 19 is the wanted depth by backstepping of the test data
         return depth
 
     def lch_similarity(self, synset1, synset2):
@@ -300,7 +302,7 @@ class WordNet:
             raise Exception(
                 "The overall depth of the hierachy is 0, this will lead to a division by 0.")
         else:
-            lc_dist = -math.log(self.distance(synset1, synset2)/(depth*2))
+            lc_dist = -math.log((1+ self.distance(synset1, synset2))/(depth*2))
         return lc_dist
 
     def noun_lowest_common_hypernyms(self, noun1, noun2):
@@ -319,22 +321,27 @@ class WordNet:
         """
         synsets = set()
 
+        # possible synsets of nouns
         synsets1 = self.get_synsets(noun1)
         synsets2 = self.get_synsets(noun2)
 
+        # a tmp dictionary stores key(distance of each lch to root node : value(corresponding lch)
         dist2lch = dict()
 
+        ## according to the vague description of this exercise and the given example: return the lch(s) that is(are) furthest from root node, since node [48395] is ruled out while [61107] is accepted given the diffence being that the accepted one is further from the root node.
+
+        # each pair of possible synsets of given pair of nouns
         for s1 in synsets1:
             for s2 in synsets2:
                 lchs = self.lowest_common_hypernyms(s1, s2)
-      
                 for lch in lchs:
-                    dist_lch_to_root = len(self.bfs(lch))
-                    if dist_lch_to_root not in dist2lch:
-                        dist2lch[dist_lch_to_root] = [lch]
-                    else:
-                        dist2lch[dist_lch_to_root].append(lch)
-        
+                    for path_to_root in self.paths_to_root(lch):
+                        dist_lch_to_root = len(path_to_root)
+                        if dist_lch_to_root not in dist2lch:
+                            dist2lch[dist_lch_to_root] = [lch]
+                        else:
+                            dist2lch[dist_lch_to_root].append(lch)
+        # go with the lch(s) which is farthest from the root node(deepest)
         max_dist = max(dist2lch.keys())
         for lch in dist2lch[max_dist]:
             synsets.add(lch)
@@ -349,7 +356,7 @@ class WordNet:
 
     # require further modification/improvement
     def __str__(self):
-        return self.id
+        return
 
 
 class Synset:
@@ -584,6 +591,8 @@ def main():
         for i in l:
             count_edges += 1
     print(count_edges)
+
+    
 
 
 if __name__ == "__main__":
