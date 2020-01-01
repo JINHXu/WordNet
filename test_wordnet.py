@@ -10,7 +10,6 @@ class TestWordNet(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.wn = WordNet("data/synsets.txt", "data/hypernyms.txt")
-    """
 
     def test_size(self):
         self.assertEqual(len(self.wn), 82115)
@@ -62,7 +61,7 @@ class TestWordNet(unittest.TestCase):
         # [27618] carnivore: a terrestrial or aquatic flesh-eating mammal
         self.assertEqual(len(hyp), 1)
         self.assertEqual(next(iter(hyp)).index, 27618)
-    
+
     def test_distance(self):
         dog_synsets = self.wn.get_synsets("dog")
         domestic_dog = next(
@@ -74,8 +73,7 @@ class TestWordNet(unittest.TestCase):
 
         distance = self.wn.distance(domestic_dog, domestic_cat)
         self.assertEqual(distance, 4)
-        
-    
+
     def test_lch_similarity(self):
         dog_synsets = self.wn.get_synsets("dog")
         domestic_dog = next(
@@ -88,8 +86,6 @@ class TestWordNet(unittest.TestCase):
         lch_similarity = self.wn.lch_similarity(domestic_dog, domestic_cat)
 
         self.assertAlmostEqual(lch_similarity, 2.028148247)
-    
-    """
 
     def test_noun_lowest_common_hypernyms(self):
         lowest_common_hypernyms = self.wn.noun_lowest_common_hypernyms(
@@ -98,4 +94,3 @@ class TestWordNet(unittest.TestCase):
         # [61107] placental placental_mammal eutherian eutherian_mammal: mammals having a placenta; all mammals except monotremes and marsupials
         self.assertEqual(len(lowest_common_hypernyms), 1)
         self.assertEqual(next(iter(lowest_common_hypernyms)).index, 61107)
-    

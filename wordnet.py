@@ -90,6 +90,8 @@ class WordNet:
 
         self._lemmasDict = lemma2synset
 
+        # root = self._verticesDict['37987']
+
     # tmp
     @property
     def edgesdict(self):
@@ -275,11 +277,11 @@ class WordNet:
         depth = 0
         distances_to_root = []
         for vertice in self._verticesDict.values():
-            for path in self.paths_to_root(vertice):
-                distance_to_root = len(path)
-                distances_to_root.append(distance_to_root)
-        depth = max(distances_to_root)
-        # 19 is the wanted depth by backstepping of the test data
+            discovered = self.bfs(vertice)
+            for relation_distance_tuple in discovered.values():
+                distances_to_root.append(relation_distance_tuple[1])
+        # depth is distance plus one
+        depth = max(distances_to_root) + 1
         return depth
 
     def lch_similarity(self, synset1, synset2):
@@ -302,7 +304,8 @@ class WordNet:
             raise Exception(
                 "The overall depth of the hierachy is 0, this will lead to a division by 0.")
         else:
-            lc_dist = -math.log((1+ self.distance(synset1, synset2))/(depth*2))
+            lc_dist = - \
+                math.log((1 + self.distance(synset1, synset2))/(depth*2))
         return lc_dist
 
     def noun_lowest_common_hypernyms(self, noun1, noun2):
@@ -327,8 +330,7 @@ class WordNet:
 
         # a tmp dictionary stores key(distance of each lch to root node : value(corresponding lch)
         dist2lch = dict()
-
-        ## according to the vague description of this exercise and the given example: return the lch(s) that is(are) furthest from root node, since node [48395] is ruled out while [61107] is accepted given the diffence being that the accepted one is further from the root node.
+        # according to the vague description of this exercise and the given example: return the lch(s) that is(are) furthest from root node, since node [48395] is ruled out while [61107] is accepted given the diffence being that the accepted one is further from the root node.
 
         # each pair of possible synsets of given pair of nouns
         for s1 in synsets1:
@@ -591,8 +593,6 @@ def main():
         for i in l:
             count_edges += 1
     print(count_edges)
-
-    
 
 
 if __name__ == "__main__":
