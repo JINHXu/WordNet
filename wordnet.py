@@ -642,6 +642,7 @@ class Path:
             The meaningfule string representation of a path, represented as a sequence of synsets.
         """
         repr = ''
+        mark = 'PATH AS VERTICES '
         # first line of ids
         id_seq = ''
         # lines of synsets on this path
@@ -650,7 +651,7 @@ class Path:
             id_seq += synset.id + ', '
             synset_seq += str(synset)
         id_seq = id_seq[:-2]
-        repr = id_seq + '\n' + synset_seq
+        repr = mark + id_seq + '\n' + synset_seq
         return repr
 
 
@@ -685,4 +686,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 """
