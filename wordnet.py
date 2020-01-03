@@ -356,9 +356,27 @@ class WordNet:
     def __len__(self):
         return len(self._verticesDict)
 
-    # require further modification/improvement
     def __str__(self):
-        return
+        """
+        The string representation of an object of WordNet class. The representation contains the following information: number of synsets, number of relations, overall depth.
+
+        Return 
+        ------
+        repr : str
+            The meaningful string representaiton of an object of WordNet class.
+        """
+        repr = ''
+        num_synsets = len(self._verticesDict)
+        num_edges = 0
+        for edges in self._edgesDict.values():
+            for _ in edges:
+                num_edges += 1
+        overall_depth = self.depth_wordnet()
+
+        repr = 'This object of WordNet consists of {} synsets, {} relations, and its overall depth is {}.'
+        repr = repr.format(str(num_synsets), str(
+            num_edges), str(overall_depth))
+        return repr
 
 
 class Synset:
@@ -394,7 +412,7 @@ class Synset:
     def id(self):
         """id getter: Return id associated with this Synset(vertex)
         Return
-        -------
+        ------
         self._id : string
             id associated with the synset
         """
@@ -404,7 +422,7 @@ class Synset:
     def lemma(self):
         """lemma getter: Return a list of lemmas associated with this Sysnset(vertex)
         Return
-        -------
+        ------
         self._lemma : list
             the list of lemmas(objects of Lemma class) associated with this Synset(vertex)
         """
@@ -414,25 +432,36 @@ class Synset:
     def gloss(self):
         """gloss getter: return the gloss associated with this Sysnset(vertex)
         Return
-        -------
-        self._gloss : string
+        ------
+        self._gloss : str
             the gloss associated with this synset"""
         return self._gloss
 
     @property
     def name(self):
+        """name getter: Returns a list of lemmas represented as strings.
+        Return 
+        ------
+        self._name : list
+            List of lemmas represented as strings.
+        """
         return self._name
 
     @property
     def index(self):
+        """index getter: Returns the id of this synset represented as int.
+        Return 
+        ------
+        self._index : int
+            id represented as int.
+        """
         return self._index
 
     def __hash__(self):
-        # temp???
+        """hash function of Synset returns the hash code of id which is the key(identifier) of a unique synset."""
         return hash(self._id)
 
     def __eq__(self, othr):
-
         if isinstance(othr, type(self)):
             return ((self._id, self._lemma, self._gloss) == (othr._id, othr._lemma, othr._gloss))
 
@@ -443,7 +472,20 @@ class Synset:
         yield from self._lemma
 
     def __str__(self):
-        return self.id + str(self.lemma) + str(self.gloss)
+        """
+        The meaningful string representation of an object of Synset class, contaning the following information: id, lemmas and glosses of this synset.
+        Return
+        ------
+        repr : str
+            The string representation of a synset.
+        """
+        repr = 'SYNSET id : {}; list of lemmas: {}; gloss: {}'
+        names = ''
+        for name in self.name:
+            names += name + ', '
+        names = names[:-2]
+        repr = repr.format(self.id, names, self.gloss)
+        return repr
 
 
 class Relation:
@@ -464,10 +506,12 @@ class Relation:
 
     @property
     def origin(self):
+        """origin getter"""
         return self._origin
 
     @property
     def destination(self):
+        """destination getter"""
         return self._destination
 
     def endpoints(self):
@@ -489,7 +533,19 @@ class Relation:
         return hash((self._origin, self._destination))
 
     def __str__(self):
-        return (str(self._origin), str(self._destination))
+        """
+        The meaningful string representation of an object of Relation class, containg the following information: origin synset of this relation and destination synset(hypernym) of this relation.
+        Return 
+        ------
+        repr : string
+            String representation of riginin synset and destination seynset of this relation.
+        """
+        repr = ''
+        repr = 'RELATION {}\nORIGIN {}DESTINATION(HYPERNYM) {}'
+        id2id = '({}, {})'
+        id2id = id2id.format(self.origin.id, self.destination.id)
+        repr = repr.format(id2id, str(self.origin), str(self.destination))
+        return repr
 
 
 class Lemma:
@@ -530,10 +586,8 @@ class Lemma:
         return hash(self._lemma)
 
     def __eq__(self, othr):
-
         if isinstance(othr, type(self)):
             return (self._lemma == othr._lemma)
-
         return NotImplemented
 
 
@@ -567,33 +621,68 @@ class Path:
 
     @property
     def edges(self):
+        """edges getter: Returns the list of edges on this path, which is an object of Path."""
         return self._edges
 
     @property
     def vertices(self):
+        """vertices getter: Returns the list of vertices on this path, which is an object of Path """
         return self._vertices
 
     def __len__(self):
+        """The length of a path is represented as the number of edges on this path."""
         return len(self._edges)
 
-    # tmp str function
     def __str__(self):
+        """
+        The meaningful string representation of an object of Path class, which contains the following information: ids of synsets on this path in one line plus all synsets in order line by line(each synset per line).
+        Return
+        ------
+        repr : string
+            The meaningfule string representation of a path, represented as a sequence of synsets.
+        """
         repr = ''
-        for relation in self._relations:
-            repr += str(relation)
+        # first line of ids
+        id_seq = ''
+        # lines of synsets on this path
+        synset_seq = ''
+        for synset in self.vertices:
+            id_seq += synset.id + ', '
+            synset_seq += str(synset)
+        id_seq = id_seq[:-2]
+        repr = id_seq + '\n' + synset_seq
         return repr
 
-# tmp
 
-
+"""main method used to visualize print result of __str__ of all classes"""
+"""
 def main():
     wn = WordNet("data/synsets.txt", "data/hypernyms.txt")
-    count_edges = 0
-    for l in wn.edgesdict.values():
-        for i in l:
-            count_edges += 1
-    print(count_edges)
+
+    # test print wordnet
+    print(wn)
+
+    # test print synset: 38045,eon aeon,the longest division of geological time
+    origin = wn._verticesDict['38045']
+    print(origin)
+
+    # test print relation: 38045,43088
+    destination = wn._verticesDict['43088']
+    relation = Relation(origin, destination)
+    print(relation)
+
+    # test print lemma: eon
+    lemma = Lemma('eon')
+    print(lemma)
+
+    # test print path
+    dog_synsets = wn.get_synsets("dog")
+    domestic_dog = next(
+        syn for syn in dog_synsets if "domestic_dog" in syn.name)
+    paths = wn.paths_to_root(domestic_dog)
+    print(paths[0])
 
 
 if __name__ == "__main__":
     main()
+"""
