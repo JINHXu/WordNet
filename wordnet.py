@@ -141,16 +141,12 @@ class WordNet:
             next_level = []
             # for each vertex in this level(the origins)
             for u in level:
-                '''
-                        warning
-                          !!!
-                '''
-                # hitting the root node
+                # hitting the root node, no outgoing edges from u
                 if u.id not in self._edgesDict:
                     break
-                # incident realtions whose origin is u
-                incident_realtions = self._edgesDict[u.id]
-                for relation in incident_realtions:
+                # incident relations whose origin is u
+                incident_relations = self._edgesDict[u.id]
+                for relation in incident_relations:
                     # the hyper synset
                     v = relation.destination
                     if v not in discovered:
@@ -161,9 +157,9 @@ class WordNet:
 
         return discovered
 
-    def print_paths_to_root(self, current_synset, path, paths):
+    def recur_paths_to_root(self, current_synset, path, paths):
         """
-        A private helper function printing paths from synset to root node based on DFS.
+        A private helper function calculates all paths from synset to root node based on DFS.
         Parameters
         ----------
         current_synset : Synset
@@ -174,9 +170,8 @@ class WordNet:
             a list of paths, which are lists of relations forming a path , an empty list will be initially passed to this function in the first call
         """
 
-        # hitting the root node: a node(synset) does not have any put going edge(realtion)
+        # hitting the root node: a node(synset) does not have any outgoing edge(relation)
         if current_synset.id not in self._edgesDict:
-            # print(path)
             paths.append(path)
 
         # not hitting the root node, keep digging by recursive call
@@ -184,7 +179,7 @@ class WordNet:
             for relation in self._edgesDict[current_synset.id]:
                 path.append(relation)
                 hyper_to_current = relation.destination
-                self.print_paths_to_root(hyper_to_current, path, paths)
+                self.recur_paths_to_root(hyper_to_current, path, paths)
 
     def paths_to_root(self, synset):
         """
@@ -202,9 +197,11 @@ class WordNet:
         # parameters passed to function's initial call
         paths = []
         tmp_path = []
-        self.print_paths_to_root(synset, tmp_path, paths)
+        self.recur_paths_to_root(synset, tmp_path, paths)
         for path in paths:
             p = Path(path)
+            # print path
+            # print(p)
             paths_to_root.append(p)
         return paths_to_root
 
