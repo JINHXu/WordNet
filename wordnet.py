@@ -180,7 +180,6 @@ class WordNet:
         # hitting the root node: a node(synset) does not have any outgoing edge(relation)
         if current_synset.id not in self._edgesDict:
             paths.append(path)
-            path = []
             print('---------------------------------------------------------')
 
         # not hitting the root node, keep digging by recursive call
