@@ -164,9 +164,9 @@ class WordNet:
 
         return discovered
 
-    def recur_paths_to_root(self, current_synset, path, paths):
+    def print_paths_to_root(self, current_synset, path, paths):
         """
-        A private helper function calculates all paths from synset to root node based on DFS.
+        A private helper function prints all paths(represented as relations) from synset to root node based on DFS.
         Parameters
         ----------
         current_synset : Synset
@@ -180,13 +180,17 @@ class WordNet:
         # hitting the root node: a node(synset) does not have any outgoing edge(relation)
         if current_synset.id not in self._edgesDict:
             paths.append(path)
+            path = []
+            print('---------------------------------------------------------')
 
         # not hitting the root node, keep digging by recursive call
         else:
             for relation in self._edgesDict[current_synset.id]:
                 path.append(relation)
+                # print path: print a relation in path immmediately when a new relation append to path
+                print(relation)
                 hyper_to_current = relation.destination
-                self.recur_paths_to_root(hyper_to_current, path, paths)
+                self.print_paths_to_root(hyper_to_current, path, paths)
 
     def paths_to_root(self, synset):
         """
@@ -204,11 +208,9 @@ class WordNet:
         # parameters passed to function's initial call
         paths = []
         tmp_path = []
-        self.recur_paths_to_root(synset, tmp_path, paths)
+        self.print_paths_to_root(synset, tmp_path, paths)
         for path in paths:
             p = Path(path)
-            # print path
-            # print(p)
             paths_to_root.append(p)
         return paths_to_root
 
