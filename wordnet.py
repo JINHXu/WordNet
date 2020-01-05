@@ -90,12 +90,19 @@ class WordNet:
 
         self._lemmasDict = lemma2synset
 
-        # root = self._verticesDict['37987']
+        # self._root = self._verticesDict['37987']
 
-    # tmp
     @property
     def edgesdict(self):
         return self._edgesDict
+
+    @property
+    def verticesDict(self):
+        return self._verticesDict
+
+    @property
+    def lemmasDict(self):
+        return self._lemmasDict
 
     def get_synsets(self, noun):
         """
@@ -389,20 +396,18 @@ class Synset:
             List lemmas(objects of Lemma class) of this synset.
         gloss : string
             The gloss of this sysnset.
-        name : list
-            List of lemmas represented as string of this synset.
         """
         self._id = id
         self._lemma = lemma
         self._gloss = gloss
 
-        # 2 more attributes added according to unittest
+        # id represented as int
         self._index = int(id)
 
         name = []
         for lm in lemma:
             name.append(lm.lemma)
-
+        # list of lemmas represented as string of this synset.
         self._name = name
 
     @property
@@ -503,16 +508,17 @@ class Relation:
 
     @property
     def origin(self):
-        """origin getter"""
+        """origin(synset) getter"""
         return self._origin
 
     @property
     def destination(self):
-        """destination getter"""
+        """destination/hypernym(synset) getter"""
         return self._destination
 
     def endpoints(self):
-        """Return (origin, destination) tuple for vertices origin and destination.
+        """
+        Return (origin, destination) tuple for vertices origin and destination.
         Return
         ------
         (self._origin, self._destination) : tuple
@@ -655,7 +661,7 @@ class Path:
 """main method used to visualize print result of __str__ of all classes"""
 """
 def main():
-    wn = WordNet("data/synsets.txt", "data/hypernyms.txt")
+    wn = WordNet("data/synsets.txt", "data/hypernyms.txt")   
 
     # test print wordnet
     print(wn)
@@ -679,9 +685,10 @@ def main():
         syn for syn in dog_synsets if "domestic_dog" in syn.name)
     paths = wn.paths_to_root(domestic_dog)
     print(paths[0])
-
+    
 
 if __name__ == "__main__":
     main()
+
 
 """
