@@ -217,7 +217,7 @@ class WordNet:
 
         for path in paths:
             p = Path(path)
-            # or print path here
+            # or print path here(vertices repr in this case)
             # print(p)
             paths_to_root.append(p)
         return paths_to_root
@@ -237,18 +237,33 @@ class WordNet:
         synsets : set
             The set of the lowest common hypernyms between synset1 and synset2.
         """
-        synsets = set()
+        synsets1 = set()
+        synsets2 = set()
         paths1 = self.paths_to_root(synset1)
         paths2 = self.paths_to_root(synset2)
         for p1 in paths1:
+            vertices_p1 = p1.vertices
+            tmp = dict()
             for p2 in paths2:
-                # vertices representation of a path
-                vertices_p1 = p1.vertices
                 vertices_p2 = p2.vertices
                 for v1 in vertices_p1:
                     if v1 in vertices_p2:
-                        synsets.add(v1)
+                        tmp[v1] = vertices_p1.index(v1)
                         break
+            synsets1.add(min(tmp, key=tmp.get))
+
+        for p1 in paths2:
+            vertices_p1 = p1.vertices
+            tmp = dict()
+            for p2 in paths1:
+                vertices_p2 = p2.vertices
+                for v1 in vertices_p1:
+                    if v1 in vertices_p2:
+                        tmp[v1] = vertices_p1.index(v1)
+                        break
+            synsets2.add(min(tmp, key=tmp.get))
+
+        synsets = synsets1.intersection(synsets2)
 
         return synsets
 
