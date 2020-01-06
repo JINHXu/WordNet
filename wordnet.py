@@ -9,6 +9,7 @@
     Honor Code:  I pledge that this program represents my own work.
 """
 import math
+from itertools import chain
 
 
 class WordNet:
@@ -164,7 +165,7 @@ class WordNet:
 
         return discovered
 
-    def print_paths_to_root(self, current_synset, path, paths):
+    def print_paths_to_root(self, current_synset, path, split_idx):
         """
         A private helper function prints all paths(represented as relations) from synset to root node based on DFS.
         Parameters
@@ -172,14 +173,14 @@ class WordNet:
         current_synset : Synset
             current synset, a synset from which the paths are constructed in the first call.
         path : list
-            a list of relations of current path, an empty list will be initially passed to this function in the first call
-        paths : list
-            a list of paths, which are lists of relations forming a path , an empty list will be initially passed to this function in the first call
+            a list of relations of all paths
+        split_idx : list
+            a list of split indexes to split path list into individaul paths
         """
 
         # hitting the root node: a node(synset) does not have any outgoing edge(relation)
         if current_synset.id not in self._edgesDict:
-            paths.append(path)
+            split_idx.append(len(path))
             print('---------------------------------------------------------')
 
         # not hitting the root node, keep digging by recursive call
@@ -189,7 +190,7 @@ class WordNet:
                 # print path: print a relation in path immmediately when a new relation append to path
                 print(relation)
                 hyper_to_current = relation.destination
-                self.print_paths_to_root(hyper_to_current, path, paths)
+                self.print_paths_to_root(hyper_to_current, path, split_idx)
 
     def paths_to_root(self, synset):
         """
@@ -205,11 +206,19 @@ class WordNet:
         """
         paths_to_root = []
         # parameters passed to function's initial call
-        paths = []
         tmp_path = []
-        self.print_paths_to_root(synset, tmp_path, paths)
+        split_idx = []
+        self.print_paths_to_root(synset, tmp_path, split_idx)
+        split_idx.pop()
+
+        # split path
+        temp = zip(chain([0], split_idx), chain(split_idx, [None]))
+        paths = list(tmp_path[i: j] for i, j in temp)
+
         for path in paths:
             p = Path(path)
+            # or print path here
+            # print(p)
             paths_to_root.append(p)
         return paths_to_root
 
@@ -240,6 +249,7 @@ class WordNet:
                     if v1 in vertices_p2:
                         synsets.add(v1)
                         break
+
         return synsets
 
     def distance(self, synset1, synset2):
