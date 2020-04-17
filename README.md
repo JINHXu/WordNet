@@ -1,22 +1,5 @@
-# Assignment 3: Algorithms on Graphs
 
-You need to follow the link on the [private course
-page](https://github.com/dsacl3-2019/dsacl3) to work on your repository. The
-deadline for this assignment is **Monday, January 6th, 8:00 CET**. This is later
-than usual, but should give everyone the chance to catch up on the
-assignment work (Assignments 3 and 4 will have some overlap with the Christmas break).
-
-You are strongly recommended to use git properly/productively: commit every 'unit' of work (e.g., individual exercises) and bug fixes separately. You do not need to worry about the mistakes in the earlier commits. Your assignment will be evaluated based only on the final commit before the deadline. Also, don't forget to add your information and the honor code to each file that you modify.
-
-This assignment covers graph algorithms, and has six subproblems. You are
-encouraged to use __private helper functions__ as needed to implement the public
-methods.
-
-**Also, remember that your code is written once and read many times. The
-classes and methods you implement should be properly documented using
-docstrings.**
-
-## WordNet
+### WordNet
 
 The [WordNet](https://wordnet.princeton.edu/) is a database of lexical relations
 for English developed at Princeton University. WordNet organizes
@@ -54,7 +37,7 @@ A directed edge connects each synset to its hypermym(s), e.g. the hypernym
 synsets of the `domestic_dog` synset are `canine canid` and `domestic_animal
 domesticated_animal`. 
 
-Your task for this assignment is to __implement a WordNet class to represent the
+ __The WordNet class is to represent the
 WordNet synsets__ and the hyperonymy relation between them, and to support a variety
 of queries for __extracting the information__ encoded in the hierarchical structure
 of WordNet.
@@ -101,8 +84,7 @@ of all its hypernym synsets, separated by commas.
 >- 35934,70150
 >- 35935,31844
 
-You should model synsets and relations using separate classes - e.g. `Synset`
-and `Relation`. 
+Synsets and relations are modeled using separate classes.
 
 The `Synset` class should store information related to the id of a synset, its
 lemmas and its definition. It might be useful to separate the information
@@ -118,7 +100,7 @@ The `Relation` class should store the origin and the destination of the
 relation. In the *hyperonymy* (*is-a* relation) case the origin will be a synset
 and the destination (one of) its hypernym(s).
 
-Make sure that each of these classes have meaningful representations when
+Each of these classes have meaningful representations when
 displayed via the `print()` method. 
 
 The WordNet class should provide an iteration over its synsets, e.g. `for synset
@@ -148,7 +130,7 @@ traversal of the graph starting at the vertex identified by `synset`. The `dista
 is the level in the bfs traversal on which that particular hypernym was discovered.
 
 ## 2. Paths to root
-Implement a function to print all the different paths from a particular
+A function to print all the different paths from a particular
 synset to the root node.
 
 - `def paths_to_root(self, synset)`
@@ -163,7 +145,7 @@ If `path` is a `Path` object, `len(path)` should
 return the number of edges the path has.
 
 ## 3. Lowest common hypernyms
-Implement a function to compute the lowest common hypernyms between two
+A function to compute the lowest common hypernyms between two
 synsets.
 
 - `def lowest_common_hypernyms(self, synset1, synset2)`
@@ -180,7 +162,7 @@ synsets might occasionally have more than one lowest common hypernym.
 The method should return a `set` of `Synset` objects.
 
 ## 4. Distance between two synsets
-Implement a function to compute the distance between two synsets.
+A function to compute the distance between two synsets.
 
 - `def distance(self, synset1, synset2)`
 
@@ -201,7 +183,7 @@ hierarchy.
 
 sim<sub>LC</sub> = ` -log(distance(synset1, synset2)/2D)`
 
-Implement a method to compute the Leacock-Chodorow distance between two
+This is a method to compute the Leacock-Chodorow distance between two
 synsets. Your implementation should define and use a separate method for computing
 the overall depth of the WordNet hierarchy.
 
@@ -220,7 +202,7 @@ might not know which synset we should use for a particular word.
 Consider again the problem of finding the lowest common hypernym, but now
 starting from words instead of from particular synsets.
 
-Implement a function to compute the lowest common hypernyms between two
+This is a function to compute the lowest common hypernyms between two
 nouns.
 
 - `def noun_lowest_common_hypernyms(self, noun1, noun2)`
