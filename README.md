@@ -1,5 +1,4 @@
-
-### WordNet
+# WordNet
 
 The [WordNet](https://wordnet.princeton.edu/) is a database of lexical relations
 for English developed at Princeton University. WordNet organizes
@@ -49,7 +48,7 @@ of WordNet.
 
 ## 1. The WordNet data structure
 
-Write a `WordNet` class containing the following methods:
+The `WordNet` class containing the following methods:
 
 - `def __init__(self, synsets_file, hypernyms_file)`
 
