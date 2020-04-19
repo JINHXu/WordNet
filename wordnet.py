@@ -1,13 +1,8 @@
-""" Data Structures and Algorithms for CL III, WS 2019-2020, Assignment 3
-
-    WordNet API
-    Course:      Data Structures and Algorithms for CL III - WS1920
-    Assignment:  WordNet API
-    Author:      Jinghua Xu
-    Description: a WordNet class to represent the WordNet synsets and the hyperonymy relation between them, and to support a variety of queries for extracting the information encoded in the hierarchical structure of WordNet.
-
-    Honor Code:  I pledge that this program represents my own work.
 """
+A WordNet class to represent the WordNet synsets and the hyperonymy relation between them, and to support a variety of queries for extracting the information encoded in the hierarchical structure of WordNet.
+by Jinghua Xu
+"""
+
 import math
 from itertools import chain
 
