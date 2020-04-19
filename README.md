@@ -45,6 +45,7 @@ of WordNet.
 * Graph: WordNet
 * points to hyper(destination)
 
+`WordNet`, `Synset`, `Lemma`, `Path` and `Relation` classes are to represent the WordNet.
 
 ## 1. The WordNet data structure
 
